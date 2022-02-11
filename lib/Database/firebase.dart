@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/screens/chat_screen.dart';
+import 'package:flash_chat/utilities/MessageBox.dart';
 import 'package:flutter/material.dart';
 
 class MessageStream extends StatelessWidget {

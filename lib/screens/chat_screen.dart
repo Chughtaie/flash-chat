@@ -1,9 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flash_chat/Database/firebase.dart';
+import 'package:flash_chat/Widgets/Rounded_buttons.dart';
+import 'package:flash_chat/Widgets/location.dart';
+import 'package:flash_chat/utilities/Attachments.dart';
+import 'package:flash_chat/utilities/CustomizedAttachments.dart';
+import 'package:flash_chat/utilities/MessageBox.dart';
+import 'package:flash_chat/utilities/NeoText.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 final _fireStore = FirebaseFirestore.instance;
+final _fireStorage = FirebaseStorage.instance;
+
 User loginUser;
 String openEmail;
 String opening;
@@ -79,11 +92,37 @@ class _ChatScreenState extends State<ChatScreen> {
                       style: TextStyle(color: Colors.blueGrey[600]),
                       controller: messagetextController,
                       onChanged: (value) {
+                        //if (message != null)
+                        //message += value;
+                        //else
                         message = value;
+                        print(message);
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
+                  FlatButton(
+                    shape: CircleBorder(),
+                    minWidth: 10,
+                    onPressed: () {
+                      showMaterialModalBottomSheet(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (context) => attachmentBottomDropDown(
+                            context, opening, loginUser),
+                      );
+                    },
+                    child: Icon(
+                      Icons.attachment_rounded,
+                      color: Colors.black54,
+                      size: 35,
+                    ),
+                  ),
+                  /*
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: getMessageItems(),
+                  ),*/
                   FlatButton(
                     onPressed: () {
                       if (message != null) {
@@ -151,76 +190,5 @@ class MessageStream extends StatelessWidget {
             );
           }
         });
-  }
-}
-
-class MessageBox extends StatelessWidget {
-  MessageBox({
-    @required this.text,
-    @required this.time,
-    this.own,
-  });
-  final text;
-  final Timestamp time;
-  final bool own;
-  double radius = 40;
-  double sides = 130;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 15),
-      child: Column(
-        crossAxisAlignment:
-            own ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment:
-                own ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              Material(
-                elevation: 10,
-                borderRadius: own
-                    ? BorderRadius.only(
-                        topLeft: Radius.elliptical(sides, sides),
-                        bottomLeft: Radius.circular(radius),
-                        bottomRight: Radius.circular(radius),
-                      )
-                    : BorderRadius.only(
-                        topRight: Radius.elliptical(sides, sides),
-                        bottomLeft: Radius.circular(radius),
-                        bottomRight: Radius.circular(radius),
-                      ),
-                color: own ? Colors.blueAccent : Colors.lightBlueAccent,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      child: Text(
-                        '$text',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: !own ? Colors.white : Colors.white,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: 20.0, right: 8, left: 8, bottom: 8),
-                      child: Text(
-                        time.toDate().hour.toString() +
-                            ':' +
-                            time.toDate().minute.toString(),
-                        style: TextStyle(fontSize: 12, color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }
